@@ -185,6 +185,6 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     private void OnDestroy()
     {
         if(cardVisual != null)
-        Destroy(cardVisual.gameObject);
+            Destroy(cardVisual.gameObject);
     }
 }
