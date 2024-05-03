@@ -6,12 +6,9 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 
-public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
+public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler//, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
 {
-    private Canvas canvas;
-    private Image imageComponent;
     [SerializeField] private bool instantiateVisual = true;
-    private VisualCardsHandler visualHandler;
     private Vector3 offset;
 
     [Header("Movement")]
@@ -20,40 +17,19 @@ public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     [Header("Selection")]
     public bool selected;
     public float selectionOffset = 50;
-    private float pointerDownTime;
-    private float pointerUpTime;
-
 
     [Header("States")]
     public bool isHovering;
     public bool isDragging;
     [HideInInspector] public bool wasDragged;
 
-    [Header("Events")]
-    [HideInInspector] public UnityEvent<CardDrag> PointerEnterEvent;
-    [HideInInspector] public UnityEvent<CardDrag> PointerExitEvent;
-    [HideInInspector] public UnityEvent<CardDrag, bool> PointerUpEvent;
-    [HideInInspector] public UnityEvent<CardDrag> PointerDownEvent;
-    [HideInInspector] public UnityEvent<CardDrag> BeginDragEvent;
-    [HideInInspector] public UnityEvent<CardDrag> EndDragEvent;
-    [HideInInspector] public UnityEvent<CardDrag, bool> SelectEvent;
+    //[Header("Events")]
+    //[HideInInspector] public UnityEvent<CardDrag> BeginDragEvent;
+    //[HideInInspector] public UnityEvent<CardDrag> EndDragEvent;
 
-    // void Start()
-    // {
-    //     canvas = GetComponentInParent<Canvas>();
-    //     imageComponent = GetComponent<Image>();
-    //
-    //     if (!instantiateVisual)
-    //         return;
-    //
-    //     visualHandler = FindObjectOfType<VisualCardsHandler>();
-    //     cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
-    //     cardVisual.Initialize(this);
-    // }
 
     void Update()
     {
-        ClampPosition();
     
         if (isDragging)
         {
@@ -64,124 +40,25 @@ public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         }
     }
 
-    void ClampPosition()
-    {
-        Vector2 screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
-        Vector3 clampedPosition = transform.position;
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, -screenBounds.x, screenBounds.x);
-        clampedPosition.y = Mathf.Clamp(clampedPosition.y, -screenBounds.y, screenBounds.y);
-        transform.position = new Vector3(clampedPosition.x, clampedPosition.y, 0);
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        BeginDragEvent.Invoke(this);
+        //BeginDragEvent.Invoke(this);
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         offset = mousePosition - (Vector2)transform.position;
         isDragging = true;
-        canvas.GetComponent<GraphicRaycaster>().enabled = false;
-        imageComponent.raycastTarget = false;
-
-        wasDragged = true;
+        Debug.Log("On Begin Dragggggg!!!!!!!");
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        Debug.Log("On Dragggggg!!!!!!!");
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        EndDragEvent.Invoke(this);
+        //EndDragEvent.Invoke(this);
         isDragging = false;
-        canvas.GetComponent<GraphicRaycaster>().enabled = true;
-        imageComponent.raycastTarget = true;
-
-        StartCoroutine(FrameWait());
-
-        IEnumerator FrameWait()
-        {
-            yield return new WaitForEndOfFrame();
-            wasDragged = false;
-        }
+        Debug.Log("On End Dragggggg!!!!!!!");
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        PointerEnterEvent.Invoke(this);
-        isHovering = true;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        PointerExitEvent.Invoke(this);
-        isHovering = false;
-    }
-
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (eventData.button != PointerEventData.InputButton.Left)
-            return;
-
-        PointerDownEvent.Invoke(this);
-        pointerDownTime = Time.time;
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (eventData.button != PointerEventData.InputButton.Left)
-            return;
-
-        pointerUpTime = Time.time;
-
-        PointerUpEvent.Invoke(this, pointerUpTime - pointerDownTime > .2f);
-
-        if (pointerUpTime - pointerDownTime > .2f)
-            return;
-
-        if (wasDragged)
-            return;
-
-        selected = !selected;
-        SelectEvent.Invoke(this, selected);
-
-        // if (selected)
-        //     transform.localPosition += (cardVisual.transform.up * selectionOffset);
-        // else
-        //     transform.localPosition = Vector3.zero;
-    }
-
-    // public void Deselect()
-    // {
-    //     if (selected)
-    //     {
-    //         selected = false;
-    //         if (selected)
-    //             transform.localPosition += (cardVisual.transform.up * 50);
-    //         else
-    //             transform.localPosition = Vector3.zero;
-    //     }
-    // }
-
-
-    public int SiblingAmount()
-    {
-        return transform.parent.CompareTag("Slot") ? transform.parent.parent.childCount - 1 : 0;
-    }
-
-    public int ParentIndex()
-    {
-        return transform.parent.CompareTag("Slot") ? transform.parent.GetSiblingIndex() : 0;
-    }
-
-    public float NormalizedPosition()
-    {
-        return transform.parent.CompareTag("Slot") ? ExtensionMethods.Remap((float)ParentIndex(), 0, (float)(transform.parent.parent.childCount - 1), 0, 1) : 0;
-    }
-
-    // private void OnDestroy()
-    // {
-    //     if(cardVisual != null)
-    //         Destroy(cardVisual.gameObject);
-    // }
 }
