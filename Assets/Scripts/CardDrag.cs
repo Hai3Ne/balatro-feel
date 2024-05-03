@@ -23,10 +23,6 @@ public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public bool isDragging;
     [HideInInspector] public bool wasDragged;
 
-    //[Header("Events")]
-    //[HideInInspector] public UnityEvent<CardDrag> BeginDragEvent;
-    //[HideInInspector] public UnityEvent<CardDrag> EndDragEvent;
-
 
     void Update()
     {
@@ -42,7 +38,6 @@ public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //BeginDragEvent.Invoke(this);
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         offset = mousePosition - (Vector2)transform.position;
         isDragging = true;
@@ -56,7 +51,6 @@ public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        //EndDragEvent.Invoke(this);
         isDragging = false;
         Debug.Log("On End Dragggggg!!!!!!!");
     }

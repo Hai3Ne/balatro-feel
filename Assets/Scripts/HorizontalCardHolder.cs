@@ -138,7 +138,7 @@ public class HorizontalCardHolder : MonoBehaviour
 
     void Swap(int index)
     {
-        isCrossing = true;
+        //isCrossing = true;
 
         Transform focusedParent = selectedCard.transform.parent;
         Transform crossedParent = cards[index].transform.parent;
@@ -147,13 +147,13 @@ public class HorizontalCardHolder : MonoBehaviour
         cards[index].transform.localPosition = cards[index].selected ? new Vector3(0, cards[index].selectionOffset, 0) : Vector3.zero;
         selectedCard.transform.SetParent(crossedParent);
 
-        isCrossing = false;
+        //isCrossing = false;
 
-        if (cards[index].cardVisual == null)
-            return;
+        //if (cards[index].cardVisual == null)
+        //    return;
 
-        bool swapIsRight = cards[index].ParentIndex() > selectedCard.ParentIndex();
-        cards[index].cardVisual.Swap(swapIsRight ? -1 : 1);
+        //bool swapIsRight = cards[index].ParentIndex() > selectedCard.ParentIndex();
+        //cards[index].cardVisual.Swap(swapIsRight ? -1 : 1);
 
         //Updated Visual Indexes
         foreach (Card card in cards)

@@ -34,7 +34,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     [HideInInspector] public bool wasDragged;
 
     [Header("Events")]
-    [HideInInspector] public UnityEvent<Card> PointerEnterEvent;
+    public UnityEvent<Card> PointerEnterEvent;
     [HideInInspector] public UnityEvent<Card> PointerExitEvent;
     [HideInInspector] public UnityEvent<Card, bool> PointerUpEvent;
     [HideInInspector] public UnityEvent<Card> PointerDownEvent;
@@ -57,7 +57,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     void Update()
     {
-        ClampPosition();
+        //ClampPosition();
 
         if (isDragging)
         {
@@ -149,22 +149,22 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         selected = !selected;
         SelectEvent.Invoke(this, selected);
 
-        if (selected)
-            transform.localPosition += (cardVisual.transform.up * selectionOffset);
-        else
-            transform.localPosition = Vector3.zero;
+        //if (selected)
+        //    transform.localPosition += (cardVisual.transform.up * selectionOffset);
+        //else
+        //    transform.localPosition = Vector3.zero;
     }
 
     public void Deselect()
     {
-        if (selected)
-        {
-            selected = false;
-            if (selected)
-                transform.localPosition += (cardVisual.transform.up * 50);
-            else
-                transform.localPosition = Vector3.zero;
-        }
+        //if (selected)
+        //{
+        //    selected = false;
+        //    if (selected)
+        //        transform.localPosition += (cardVisual.transform.up * 50);
+        //    else
+        //        transform.localPosition = Vector3.zero;
+        //}
     }
 
 
@@ -175,11 +175,13 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     public int ParentIndex()
     {
+        Debug.Log("ParentIndex " + transform.parent.GetSiblingIndex());
         return transform.parent.CompareTag("Slot") ? transform.parent.GetSiblingIndex() : 0;
     }
 
     public float NormalizedPosition()
     {
+        Debug.Log("NormalizedPosition " + ExtensionMethods.Remap((float)ParentIndex(), 0, (float)(transform.parent.parent.childCount - 1), 0, 1));
         return transform.parent.CompareTag("Slot") ? ExtensionMethods.Remap((float)ParentIndex(), 0, (float)(transform.parent.parent.childCount - 1), 0, 1) : 0;
     }
 
