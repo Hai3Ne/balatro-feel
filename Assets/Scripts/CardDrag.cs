@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler,
-    IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
+public class CardDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, IPointerDownHandler
 {
     private Canvas canvas;
     private Image imageComponent;
@@ -24,9 +23,6 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     private float pointerDownTime;
     private float pointerUpTime;
 
-    [Header("Visual")]
-    [SerializeField] private GameObject cardVisualPrefab;
-    [HideInInspector] public CardVisual cardVisual;
 
     [Header("States")]
     public bool isHovering;
@@ -34,31 +30,31 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     [HideInInspector] public bool wasDragged;
 
     [Header("Events")]
-    [HideInInspector] public UnityEvent<Card> PointerEnterEvent;
-    [HideInInspector] public UnityEvent<Card> PointerExitEvent;
-    [HideInInspector] public UnityEvent<Card, bool> PointerUpEvent;
-    [HideInInspector] public UnityEvent<Card> PointerDownEvent;
-    [HideInInspector] public UnityEvent<Card> BeginDragEvent;
-    [HideInInspector] public UnityEvent<Card> EndDragEvent;
-    [HideInInspector] public UnityEvent<Card, bool> SelectEvent;
+    [HideInInspector] public UnityEvent<CardDrag> PointerEnterEvent;
+    [HideInInspector] public UnityEvent<CardDrag> PointerExitEvent;
+    [HideInInspector] public UnityEvent<CardDrag, bool> PointerUpEvent;
+    [HideInInspector] public UnityEvent<CardDrag> PointerDownEvent;
+    [HideInInspector] public UnityEvent<CardDrag> BeginDragEvent;
+    [HideInInspector] public UnityEvent<CardDrag> EndDragEvent;
+    [HideInInspector] public UnityEvent<CardDrag, bool> SelectEvent;
 
-    void Start()
-    {
-        canvas = GetComponentInParent<Canvas>();
-        imageComponent = GetComponent<Image>();
-
-        if (!instantiateVisual)
-            return;
-
-        visualHandler = FindObjectOfType<VisualCardsHandler>();
-        cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
-        cardVisual.Initialize(this);
-    }
+    // void Start()
+    // {
+    //     canvas = GetComponentInParent<Canvas>();
+    //     imageComponent = GetComponent<Image>();
+    //
+    //     if (!instantiateVisual)
+    //         return;
+    //
+    //     visualHandler = FindObjectOfType<VisualCardsHandler>();
+    //     cardVisual = Instantiate(cardVisualPrefab, visualHandler ? visualHandler.transform : canvas.transform).GetComponent<CardVisual>();
+    //     cardVisual.Initialize(this);
+    // }
 
     void Update()
     {
         ClampPosition();
-
+    
         if (isDragging)
         {
             Vector2 targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - offset;
@@ -149,23 +145,23 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         selected = !selected;
         SelectEvent.Invoke(this, selected);
 
-        if (selected)
-            transform.localPosition += (cardVisual.transform.up * selectionOffset);
-        else
-            transform.localPosition = Vector3.zero;
+        // if (selected)
+        //     transform.localPosition += (cardVisual.transform.up * selectionOffset);
+        // else
+        //     transform.localPosition = Vector3.zero;
     }
 
-    public void Deselect()
-    {
-        if (selected)
-        {
-            selected = false;
-            if (selected)
-                transform.localPosition += (cardVisual.transform.up * 50);
-            else
-                transform.localPosition = Vector3.zero;
-        }
-    }
+    // public void Deselect()
+    // {
+    //     if (selected)
+    //     {
+    //         selected = false;
+    //         if (selected)
+    //             transform.localPosition += (cardVisual.transform.up * 50);
+    //         else
+    //             transform.localPosition = Vector3.zero;
+    //     }
+    // }
 
 
     public int SiblingAmount()
@@ -183,9 +179,9 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         return transform.parent.CompareTag("Slot") ? ExtensionMethods.Remap((float)ParentIndex(), 0, (float)(transform.parent.parent.childCount - 1), 0, 1) : 0;
     }
 
-    private void OnDestroy()
-    {
-        if(cardVisual != null)
-            Destroy(cardVisual.gameObject);
-    }
+    // private void OnDestroy()
+    // {
+    //     if(cardVisual != null)
+    //         Destroy(cardVisual.gameObject);
+    // }
 }
